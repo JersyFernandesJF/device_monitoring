@@ -15,7 +15,7 @@ export class Device {
   @Column({ type: "enum", enum: DeviceType })
   type: DeviceType;
 
-  @Column({ type: "enum", enum: DeviceStatus })
+  @Column({ type: "enum", enum: DeviceStatus, default: DeviceStatus.OFFLINE })
   status: DeviceStatus;
    
   @UpdateDateColumn()
