@@ -1,15 +1,18 @@
-version: '3.8'
-services:
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: device_monitoring
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+version: "3.7"
 
-volumes:
-  postgres_data:
+services:
+  device-monitoring-api-pg:
+    image: bitnami/postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=Ii13a2019
+      - POSTGRESQL_DATABASE=device_monitoring
+  device-monitoring-api-pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 82:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=devicemonitoring@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=Ii13a2019
