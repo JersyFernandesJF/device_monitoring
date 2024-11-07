@@ -29,25 +29,27 @@ export const updateDevicesStatus = async (req: Request, res: Response) => {
   const useCase = new UpdateDeviceStatusUseCase();
   const updatedDevice = await useCase.execute(id, status);
 
-  if (updatedDevice) res.json(updatedDevice);
-  else res.status(404).json({ error: "Device not found" });
+  if (updatedDevice) {
+    res.json(updatedDevice);
+  } else res.status(404).json({ error: "Device not found" });
 };
 export const toogleDevicesStatus = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { status } = req.body;
 
   const useCase = new ToogleDeviceStatusUseCase();
   const updatedDevice = await useCase.execute(id);
 
-  if (updatedDevice) res.json(updatedDevice);
-  else res.status(404).json({ error: "Device not found" });
+  if (updatedDevice) {
+    res.json(updatedDevice);
+  } else res.status(404).json({ error: "Device not found" });
 };
 
 export const createDevice = async (req: Request, res: Response) => {
   const useCase = new CreateDeviceUseCase();
   const newDevice = await useCase.execute(req.body);
-  if (newDevice) res.status(201).json(newDevice);
-  else res.status(400).json({ error: "Something wrong happened" });
+  if (newDevice) {
+    res.status(201).json(newDevice);
+  } else res.status(400).json({ error: "Something wrong happened" });
 };
 
 export const deleteDevice = async (req: Request, res: Response) => {
