@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { DeviceService } from "../services/device.service";
-import { DeviceStatus } from "../enums";
+import {
+  UpdateDeviceStatusUseCase,
+  CreateDeviceUseCase,
+  DeleteDeviceUseCase,
+  ToogleDeviceStatusUseCase,
+} from "../use-cases";
 
 const deviceService = new DeviceService();
 
@@ -21,12 +26,37 @@ export const updateDevicesStatus = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  if (!Object.values(DeviceStatus).includes(status)) {
-    res.status(400).json({ error: "Invalid status" });
-  }
+  const useCase = new UpdateDeviceStatusUseCase();
+  const updatedDevice = await useCase.execute(id, status);
 
-  const device = await deviceService.updateDeviceStatus(id, status);
-
-  if (device) res.json(device);
+  if (updatedDevice) res.json(updatedDevice);
   else res.status(404).json({ error: "Device not found" });
+};
+export const toogleDevicesStatus = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const useCase = new ToogleDeviceStatusUseCase();
+  const updatedDevice = await useCase.execute(id);
+
+  if (updatedDevice) res.json(updatedDevice);
+  else res.status(404).json({ error: "Device not found" });
+};
+
+export const createDevice = async (req: Request, res: Response) => {
+  const useCase = new CreateDeviceUseCase();
+  const newDevice = await useCase.execute(req.body);
+  if (newDevice) res.status(201).json(newDevice);
+  else res.status(400).json({ error: "Something wrong happened" });
+};
+
+export const deleteDevice = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const useCase = new DeleteDeviceUseCase();
+  const result = await useCase.execute(id);
+  if (result) {
+    res.status(204).send();
+  } else {
+    res.status(404).json({ error: "Device not found" });
+  }
 };

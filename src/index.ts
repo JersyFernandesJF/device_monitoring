@@ -6,7 +6,6 @@ import * as dotenv from "dotenv";
 import { errorHandler } from "./middlwares";
 import deviceRoutes from "./routes/device.routes";
 
-
 dotenv.config();
 
 const app = express()
@@ -21,7 +20,7 @@ AppDataSource.initialize()
   .then(async() => {
     console.log("Database connected");
     app.listen(PORT, () =>
-      console.log(`Server running on http://localhost:${PORT}`)
+      console.log(`Server running on http://localhost:${PORT}/api/devices`)
     );
   })
   .catch((error) => console.error("Error initializing database", error));

@@ -24,4 +24,17 @@ export class DeviceService {
     }
     return null;
   }
+  async createDevice(deviceData: Partial<Device>): Promise<Device> {
+    const device = DeviceRepository.create(deviceData);
+    return DeviceRepository.save(device);
+  }
+  
+  async deleteDevice(id: string): Promise<boolean> {
+    const device = await DeviceRepository.findOneBy({ id });
+    if (device) {
+      await DeviceRepository.remove(device);
+      return true;
+    }
+    return false;
+  }
 }

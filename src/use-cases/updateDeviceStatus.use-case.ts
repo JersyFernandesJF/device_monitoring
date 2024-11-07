@@ -9,10 +9,10 @@ export class UpdateDeviceStatusUseCase {
     this.deviceService = new DeviceService();
   }
 
-  async execute(deviceId: string, status: DeviceStatus): Promise<Device | null> {
-    const device = await this.deviceService.getDeviceById(deviceId);
+  async execute(id: string, status: DeviceStatus): Promise<Device | null> {
+    const device = await this.deviceService.getDeviceById(id);
     if (!device) return null;
 
-    return this.deviceService.updateDeviceStatus(deviceId, status);
+    return this.deviceService.updateDeviceStatus(id, status);
   }
 }
