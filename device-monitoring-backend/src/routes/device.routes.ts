@@ -8,6 +8,7 @@ import {
 } from "../controllers/device.controller";
 import { validateDeviceStatus } from "../middlwares";
 
+
 const router = express.Router();
 
 router.get("/", getAllDevices);
