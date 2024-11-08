@@ -1,17 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DeviceListComponent } from './device-list/device-list.component';
-import { DeviceCreateComponent } from './device-create/device-create.component';
-import { DeviceDetailComponent } from './device-detail/device-detail.component';
 
-const routes: Routes = [
-  {path: '', component: DeviceListComponent},
-  {path: 'create', component: DeviceCreateComponent },
-  {path: ':id', component: DeviceDetailComponent }
-];
+const routes: Routes = [{ path: '', component: DeviceListComponent }];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+
+  exports: [RouterModule],
 })
-export class DevicesRoutingModule { }
+export class DevicesRoutingModule {}

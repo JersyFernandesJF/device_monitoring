@@ -4,7 +4,11 @@ import { DeviceStatus } from "../enums";
 
 export class DeviceService {
   async getAllDevices(): Promise<Device[]> {
-    return DeviceRepository.find();
+    return DeviceRepository.find({
+      order: {
+        created_at: 'ASC',
+      },
+    });
   }
 
   async getDeviceById(id: string): Promise<Device | null> {
@@ -24,11 +28,17 @@ export class DeviceService {
     }
     return null;
   }
-  async createDevice(deviceData: Partial<Device>): Promise<Device> {
-    const device = DeviceRepository.create(deviceData);
-    return DeviceRepository.save(device);
+  async createDevice(deviceData: Partial<Device>): Promise<Device | null> {
+    const device = await DeviceRepository.findOne({
+      where: { ipAddress: deviceData.ipAddress },
+    });
+    if (device) {
+      return null;
+    }
+    const newDevice = DeviceRepository.create(deviceData);
+    return DeviceRepository.save(newDevice);
   }
-  
+
   async deleteDevice(id: string): Promise<boolean> {
     const device = await DeviceRepository.findOneBy({ id });
     if (device) {

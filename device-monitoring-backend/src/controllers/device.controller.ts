@@ -47,6 +47,7 @@ export const toogleDevicesStatus = async (req: Request, res: Response) => {
 export const createDevice = async (req: Request, res: Response) => {
   const useCase = new CreateDeviceUseCase();
   const newDevice = await useCase.execute(req.body);
+
   if (newDevice) {
     res.status(201).json(newDevice);
   } else res.status(400).json({ error: "Something wrong happened" });

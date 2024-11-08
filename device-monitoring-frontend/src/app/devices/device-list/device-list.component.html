@@ -1,1 +1,54 @@
-<p>device-list works!</p>
+<div class="device-list-container">
+  <h2>Lista de Dispositivos</h2>
+  <form class="example-form">
+    <mat-form-field class="example-full-width">
+      <mat-label>Search</mat-label>
+      <input matInput placeholder="Search for somthing..." value="">
+    </mat-form-field>
+  </form>
+  <div *ngIf="devices.length > 0; else noDevices" class="device-cards">
+    <div *ngFor="let device of devices" class="device-card">
+      <ng-container *ngIf="device">
+
+        <div class="device-header">
+          <h3>{{ device.type }}</h3>
+          <span class="status"
+            [ngClass]="{'online': device.status === 'online', 'offline': device.status !== 'online'}">
+            {{ device.status }}
+          </span>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" yPosition="below">
+            <button mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="toogleStatus(device.id)">
+              <ng-container *ngIf="device.status === 'offline'; else offlineIcon">
+                <mat-icon>signal_wifi_4_bar</mat-icon>
+              </ng-container>
+              <ng-template #offlineIcon>
+                <mat-icon>signal_wifi_off</mat-icon>
+              </ng-template>
+              <span>{{ device.status === 'online' ? 'Set Offline' : 'Set Online' }}</span>
+            </button>
+            <button mat-menu-item disabled>
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="device-info">
+          <p><strong>IP Address:</strong> {{ device.ipAddress }}</p>
+          <p><strong>MAC Address:</strong> {{ device.macAddress }}</p>
+          <p><strong>Última Atividade:</strong> {{ device.lastActivity | date: 'short' }}</p>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-template #noDevices>
+    <p class="no-devices">Nenhum dispositivo encontrado.</p>
+  </ng-template>
+</div>

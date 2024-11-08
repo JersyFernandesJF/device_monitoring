@@ -10,6 +10,7 @@ export class CreateDeviceUseCase {
 
   async execute(deviceData: Partial<Device>): Promise<Device | null> {
     const newDevice = await this.deviceService.createDevice(deviceData);
+
     if (!newDevice) return null;
     return newDevice;
   }

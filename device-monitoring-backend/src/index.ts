@@ -5,28 +5,47 @@ import { AppDataSource } from "./config/database";
 import * as dotenv from "dotenv";
 import { errorHandler } from "./middlwares";
 import deviceRoutes from "./routes/device.routes";
+import http from "http";
+const cors = require("cors");
+import { Server } from "socket.io";
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
 
-
+app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 app.use("/api/devices", deviceRoutes);
-
 app.use(errorHandler);
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("Usuário conectado:", socket.id);
+
+  socket.send("Mensagem do servidor");
+
+  socket.on("message", (msg) => {
+    console.log("Mensagem recebida:", msg);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Usuário desconectado:", socket.id);
+  });
 });
 
 AppDataSource.initialize()
-  .then(async () => {
+  .then(() => {
     console.log("Database connected");
-    app.listen(PORT, () =>
-      console.log(`Server running on http://localhost:${PORT}/api/devices`)
-    );
+    server.listen(PORT, () => {
+      console.log(`Servidor rodando em http://localhost:${PORT}/api/devices`);
+    });
   })
-  .catch((error) => console.error("Error initializing database", error));
-
+  .catch((error) => console.error("Erro ao inicializar o banco de dados:", error));
