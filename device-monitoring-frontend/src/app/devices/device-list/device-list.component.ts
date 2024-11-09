@@ -1,77 +1,98 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { DeviceService } from '../../services/device.service';
 import { Device } from '../../models/device.model';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import {
-  MatSlideToggleModule,
-  _MatSlideToggleRequiredValidatorModule,
-} from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { Socket } from 'ngx-socket-io';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+
+interface DeviceType {
+  value: string;
+  viewValue: string;
+}
 
 @Component({
   selector: 'app-device-list',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     MatSlideToggleModule,
     MatButtonModule,
     MatMenuModule,
     MatIconModule,
     FormsModule,
     MatFormFieldModule,
-    MatInputModule,
-    MatSlideToggleModule,
-    FormsModule,
-    _MatSlideToggleRequiredValidatorModule,
-    ReactiveFormsModule,
+    MatButtonToggleModule,
+    MatSelectModule,
   ],
   templateUrl: './device-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./device-list.component.css'],
 })
-
 export class DeviceListComponent implements OnInit {
-  private _formBuilder = inject(FormBuilder);
+  hideMultipleSelectionIndicator = false;
+
+  deviceTypes: DeviceType[] = [
+    { value: 'SMART_TV', viewValue: 'Smart TV' },
+    { value: 'SMARTPHONE', viewValue: 'Smartphone' },
+    { value: 'IOT_DEVICE', viewValue: 'IoT device' },
+  ];
+
   devices: Partial<Device[]> = [];
 
-  isChecked = true;
-  formGroup = this._formBuilder.group({
-    enableWifi: '',
-    acceptTerms: ['', Validators.requiredTrue],
-  });
-
-  constructor(private deviceService: DeviceService) {}
+  constructor(
+    private deviceService: DeviceService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.refreshDeviceList();
   }
-  alertFormValues(formGroup: FormGroup) {
-    alert(JSON.stringify(formGroup.value, null, 2));
-  }
+
   refreshDeviceList() {
     this.deviceService.getDevices().subscribe((data) => {
       this.devices = data;
+      this.cdr.markForCheck();
     });
   }
+
   toogleStatus(id: string): void {
     this.deviceService.toogleDeviceById(id).subscribe(
-      (response) => {},
+      (response) => {
+        this.devices = this.devices.map((device) =>
+          device?.id === id ? response : device
+        );
+        this.cdr.markForCheck();
+      },
       (error) => {
         console.error('Erro ao alterar status', error);
       }
     );
+  }
+
+  onToggleChange(event: any): void {
+    if (event.value === 'all') {
+      this.refreshDeviceList();
+    } else {
+      this.deviceService.getAllDevicesByStatus(event.value).subscribe(
+        (response) => {
+          this.devices = response;
+          this.cdr.markForCheck();
+        },
+        (error) => {
+          console.error('Error changing status!', error);
+        }
+      );
+    }
   }
 }

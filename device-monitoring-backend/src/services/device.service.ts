@@ -6,13 +6,24 @@ export class DeviceService {
   async getAllDevices(): Promise<Device[]> {
     return DeviceRepository.find({
       order: {
-        created_at: 'ASC',
+        created_at: "ASC",
       },
     });
   }
 
   async getDeviceById(id: string): Promise<Device | null> {
     return DeviceRepository.findOne({ where: { id } });
+  }
+  
+  async getAllDeviceByStatus(status: DeviceStatus): Promise<Device[] | null> {
+    return DeviceRepository.find({
+      where: {
+        status: status,
+      },
+      order: {
+        created_at: "ASC",
+      },
+    });
   }
 
   async updateDeviceStatus(

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { DeviceService } from "../services/device.service";
 import {
   UpdateDeviceStatusUseCase,
@@ -6,6 +6,7 @@ import {
   DeleteDeviceUseCase,
   ToogleDeviceStatusUseCase,
 } from "../use-cases";
+import { DeviceStatus } from "../enums";
 
 const deviceService = new DeviceService();
 
@@ -33,6 +34,17 @@ export const updateDevicesStatus = async (req: Request, res: Response) => {
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };
+
+export const getAllDevicesByStatus = async(req: Request, res: Response) =>{
+  const { status } = req.query;
+
+
+    const devicesByStatus = await deviceService.getAllDeviceByStatus(status as DeviceStatus);
+
+    if(deviceService) res.json(devicesByStatus);
+    else res.status(404).json({ error: "Device not found" })
+};
+
 export const toogleDevicesStatus = async (req: Request, res: Response) => {
   const { id } = req.params;
 

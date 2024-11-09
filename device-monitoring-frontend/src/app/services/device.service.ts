@@ -3,24 +3,25 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Device } from '../models/device.model';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeviceService {
-
   private apiUrl = 'http://localhost:3000/api/devices/';
   constructor(private http: HttpClient) {}
 
-  getDevices(): Observable<Device[]>{
-    console.log(this.http.get<Device[]>(`${this.apiUrl}`))
+  getDevices(): Observable<Device[]> {
     return this.http.get<Device[]>(`${this.apiUrl}`);
   }
-   
-  toogleDeviceById(id: string): Observable<Device>{
+
+  getAllDevicesByStatus(status: string): Observable<Device[]> {
+    return this.http.get<Device[]>(`${this.apiUrl}/status?status=${status}`);
+  }
+
+  toogleDeviceById(id: string): Observable<Device> {
     return this.http.put<Device>(`${this.apiUrl}/${id}/toogle`, {});
   }
-  getDevicesById(id: string): Observable<Device>{
+  getDevicesById(id: string): Observable<Device> {
     return this.http.get<Device>(`${this.apiUrl}/${id}`);
   }
 

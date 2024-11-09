@@ -1,15 +1,23 @@
 <div class="device-list-container">
-  <h2>Lista de Dispositivos</h2>
-  <form class="example-form">
-    <mat-form-field class="example-full-width">
-      <mat-label>Search</mat-label>
-      <input matInput placeholder="Search for somthing..." value="">
-    </mat-form-field>
-  </form>
+  <div class="device-list-header">
+     <h2>Device List</h2>
+     <section>
+      <mat-button-toggle-group
+        name="status"
+        aria-label="Status"
+        [value]="'All'"
+        (change)="onToggleChange($event)"
+      >
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="online">Online</mat-button-toggle>
+        <mat-button-toggle value="offline">Offline</mat-button-toggle>
+      </mat-button-toggle-group>
+    </section>
+  </div>
+ 
   <div *ngIf="devices.length > 0; else noDevices" class="device-cards">
     <div *ngFor="let device of devices" class="device-card">
       <ng-container *ngIf="device">
-
         <div class="device-header">
           <h3>{{ device.type }}</h3>
           <span class="status"
@@ -49,6 +57,6 @@
   </div>
 
   <ng-template #noDevices>
-    <p class="no-devices">Nenhum dispositivo encontrado.</p>
+    <p class="no-devices">No devices found.</p>
   </ng-template>
 </div>
