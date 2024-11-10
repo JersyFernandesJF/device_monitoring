@@ -1,27 +1,57 @@
-# DeviceMonitoringFrontend
+Device_Monitoring_FE
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.11.
+Device Monitoring_FE
 
-## Development server
+This Angular project is an application for managing networked devices. The interface allows users to view a list of devices, filter by status and MAC address, toggle the connectivity status of devices, and receive real-time notifications on device creation, updates, or deletions.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Features
+	•	Display Device List: View a list of devices with details like type, status, IP address, MAC address, and last activity.
+	•	Status Filter: Filter devices by status (“All,” “Online,” and “Offline”) using a toggle button.
+	•	MAC Address Filter: Search for devices by MAC address using an input field.
+	•	Update Device Status: Toggle the status (online/offline) of devices directly from the interface.
+	•	Real-Time Notifications: Automatically receive updates on device status (creation, update, and deletion) via sockets.
+	•	Actions Menu: Access additional actions for each device, including editing status and viewing details.
 
-## Code scaffolding
+Technologies Used
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Frontend
+	•	Angular: The main framework used to build the SPA application.
+	•	Angular Material: Used for creating user interface components (such as buttons, menus, icons, etc.) with a modern design.
+	•	FormsModule: Angular module for reactive form handling and data binding.
+	•	RxJS: Library for working with reactive programming and handling data streams.
 
-## Build
+Backend (APIs)
+	•	HTTP Client Module: Used for communication with the REST API, which provides the device list and enables actions like status changes.
+	•	DeviceService: Service that facilitates backend communication, offering methods like getDevices(), toggleDeviceById(), deleteDevice(), etc.
+	•	Socket.IO: Real-time event management with the server via WebSocket for immediate device updates in the interface.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Project Structure
+	•	device-list.component: Main component for the device list, responsible for rendering and managing the state of devices and filters.
+	•	device.service: Service responsible for HTTP calls to the backend, retrieving and updating device data.
+	•	socket.service: Service for handling WebSocket connections and listening to real-time device status change events.
 
-## Running unit tests
+How to Run the Project
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Prerequisites
+	•	Node.js and Angular CLI installed.
+	•	Backend server available at the specified URL (http://localhost:3000).
 
-## Running end-to-end tests
+Steps
+	1.	Install dependencies:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+npm install
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+	2.	Start the development server:
+
+ng serve
+
+
+	3.	Access the application:
+Open your browser and go to http://localhost:4200.
+
+Note
+
+For WebSocket functionality to work correctly, the backend server must be running and accessible at http://localhost:3000.
+
+This README provides an overview of the application’s main features and technologies, allowing new developers to quickly understand how to start and contribute to the project.
