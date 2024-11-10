@@ -1,5 +1,3 @@
-import { Device } from "../entities/device.entity";
-import { DeviceStatus } from "../enums";
 import { DeviceService } from "../services/device.service";
 
 export class DeleteDeviceUseCase {

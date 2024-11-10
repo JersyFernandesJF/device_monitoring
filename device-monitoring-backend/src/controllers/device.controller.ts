@@ -1,26 +1,31 @@
-import { Request, response, Response } from "express";
-import { DeviceService } from "../services/device.service";
+import { Request, Response } from "express";
 import {
   UpdateDeviceStatusUseCase,
   CreateDeviceUseCase,
   DeleteDeviceUseCase,
   ToogleDeviceStatusUseCase,
+  GetAllDeviceUseCase,
+  GetDeviceByIdUseCase,
+  GetDeviceByStatusUseCase,
 } from "../use-cases";
 import { DeviceStatus } from "../enums";
-
-const deviceService = new DeviceService();
+import { io } from "../";
 
 export const getAllDevices = async (req: Request, res: Response) => {
-  const devices = await deviceService.getAllDevices();
-
-  res.json(devices);
+  const useCase = new GetAllDeviceUseCase();
+  const devices = await useCase.execute();
+  if (devices) res.json(devices);
+  else res.status(404).json({ error: "Devices not found" });
 };
 
 export const getDeviceById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const device = await deviceService.getDeviceById(id);
 
-  res.json(device);
+  const useCase = new GetDeviceByIdUseCase();
+  const device = await useCase.execute(id);
+
+  if (device) res.json(device);
+  else res.status(404).json({ error: "Device not found" });
 };
 
 export const updateDevicesStatus = async (req: Request, res: Response) => {
@@ -31,18 +36,19 @@ export const updateDevicesStatus = async (req: Request, res: Response) => {
   const updatedDevice = await useCase.execute(id, status);
 
   if (updatedDevice) {
+    io.emit("deviceStatusUpdated", { id, status });
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };
 
-export const getAllDevicesByStatus = async(req: Request, res: Response) =>{
+export const getAllDevicesByStatus = async (req: Request, res: Response) => {
   const { status } = req.query;
 
+  const useCase = new GetDeviceByStatusUseCase();
+  const devicesByStatus = await useCase.execute(status as DeviceStatus);
 
-    const devicesByStatus = await deviceService.getAllDeviceByStatus(status as DeviceStatus);
-
-    if(deviceService) res.json(devicesByStatus);
-    else res.status(404).json({ error: "Device not found" })
+  if (devicesByStatus) res.json(devicesByStatus);
+  else res.status(404).json({ error: "Device not found" });
 };
 
 export const toogleDevicesStatus = async (req: Request, res: Response) => {
@@ -52,6 +58,7 @@ export const toogleDevicesStatus = async (req: Request, res: Response) => {
   const updatedDevice = await useCase.execute(id);
 
   if (updatedDevice) {
+    io.emit("deviceStatusUpdated", { updatedDevice });
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };
@@ -61,6 +68,7 @@ export const createDevice = async (req: Request, res: Response) => {
   const newDevice = await useCase.execute(req.body);
 
   if (newDevice) {
+    io.emit("deviceCreated", newDevice);
     res.status(201).json(newDevice);
   } else res.status(400).json({ error: "Something wrong happened" });
 };
@@ -70,6 +78,7 @@ export const deleteDevice = async (req: Request, res: Response) => {
   const useCase = new DeleteDeviceUseCase();
   const result = await useCase.execute(id);
   if (result) {
+    io.emit("deviceDeleted", { id });
     res.status(204).send();
   } else {
     res.status(404).json({ error: "Device not found" });

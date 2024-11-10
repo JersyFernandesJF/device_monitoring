@@ -17,4 +17,20 @@
     console.log(socket.connected, socket.id)
 
   })
+
+  socket.on("deviceStatusUpdated", (data) => {
+      console.log("Status do dispositivo atualizado:", data);
+    });
+
+    socket.on("deviceCreated", (data) => {
+      console.log("Novo dispositivo criado:", data);
+    });
+
+    socket.on("deviceDeleted", (data) => {
+      console.log("Dispositivo deletado:", data);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Desconectado do servidor");
+    });
 </script>

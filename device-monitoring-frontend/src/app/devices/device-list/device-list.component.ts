@@ -15,6 +15,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { SocketService } from '../../services/socket.service';
 
 interface DeviceType {
   value: string;
@@ -52,11 +53,13 @@ export class DeviceListComponent implements OnInit {
 
   constructor(
     private deviceService: DeviceService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.refreshDeviceList();
+    this.listenToSocketEvents();
   }
 
   refreshDeviceList() {
@@ -69,6 +72,7 @@ export class DeviceListComponent implements OnInit {
   toogleStatus(id: string): void {
     this.deviceService.toogleDeviceById(id).subscribe(
       (response) => {
+        console.log(response)
         this.devices = this.devices.map((device) =>
           device?.id === id ? response : device
         );
@@ -94,5 +98,27 @@ export class DeviceListComponent implements OnInit {
         }
       );
     }
+  }
+  listenToSocketEvents() {
+    this.socketService.on('deviceStatusUpdated').subscribe((updatedDevice) => {
+      console.log("Status Updated")
+      console.log(updatedDevice)
+      this.devices = this.devices.map((device) =>
+        device?.id === updatedDevice.id ? updatedDevice : device
+      );
+      this.cdr.markForCheck();
+    });
+
+    this.socketService.on('deviceCreated').subscribe((newDevice) => {
+      console.log("Device Created")
+      this.devices = [...this.devices, newDevice];
+      this.cdr.markForCheck();
+    });
+
+    this.socketService.on('deviceDeleted').subscribe(({ id }) => {
+      console.log("Device deleted")
+      this.devices = this.devices.filter((device) => device?.id !== id);
+      this.cdr.markForCheck();
+    });
   }
 }
