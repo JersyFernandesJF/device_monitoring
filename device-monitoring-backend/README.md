@@ -1,63 +1,66 @@
-Device_Monitoring_BE
-
+# Device_Monitoring_BE
 Device Monitoring_BE
 
-Description
+Descrição
 
-This project is a simulated network device monitoring application. It provides an API to manage and simulate the status of devices, such as Smart TVs, smartphones, and IoT devices. Through this API, you can add, list, and update devices, including simulating actions on IoT devices (turn on/off, adjust temperature, etc.).
+Este projeto é uma aplicação de monitoramento de dispositivos simulados em rede. Ele fornece uma API para gerenciar e simular o estado de dispositivos, como Smart TVs, smartphones e dispositivos IoT. Através dessa API, você pode adicionar, listar e atualizar dispositivos, incluindo a simulação de ações em dispositivos IoT (ligar/desligar, ajustar a temperatura, etc.).
 
-The application is built with Node.js, Express, TypeORM, and a PostgreSQL database.
+A aplicação é construída com Node.js, Express, TypeORM, e um banco de dados PostgreSQL.
 
-Installation and Setup
+Instalação e Configuração
 
-1. Clone the repository:
+## 	1.	Clonar o repositório:
 
 git clone https://github.com/JersyFernandesJF/device_monitoring
 cd device_monitoring
 
-2. Create a .env file:
 
-The .env file is necessary to set up the database connection. Create the .env file in the root directory and add the following environment variables:
-	•	DB_HOST=localhost
-	•	DB_PORT=5432
-	•	DB_USERNAME=postgres
-	•	DB_PASSWORD=Ii13a2019
-	•	DB_NAME=device_monitoring
+## 	2.	Criar um arquivo .env:
+O arquivo .env é necessário para configurar a conexão com o banco de dados. Crie o arquivo .env na raiz do projeto e adicione as seguintes variáveis de ambiente:
 
-3. Run Docker Compose:
+- DB_HOST=localhost
+- DB_PORT=5432
+- DB_USERNAME=postgres
+- DB_PASSWORD=Ii13a2019
+- DB_NAME=device_monitoring
 
-Now, run Docker Compose to start the database and backend:
+
+## 	3.	Rodar o Docker Compose:
+
+Agora, execute o Docker Compose para iniciar o banco de dados e o backend:
 
 docker-compose up
 
-Running the Backend
 
-After Docker Compose has started the database, run the backend of the application:
 
-1. Install dependencies:
+Executando o Backend
 
-Ensure Node dependencies are installed:
+Após o Docker Compose ter iniciado o banco de dados, rode o backend da aplicação:
 
-npm install
+##### 1.	Instalar dependências:
+Certifique-se de ter as dependências do Node instaladas:
 
-2. Start the development server:
+`npm install`
 
-Use the command below to start the server in development mode (with live reload via nodemon):
 
-npm run dev
+##### 2.	Iniciar o servidor de desenvolvimento:
+Utilize o comando abaixo para iniciar o servidor em modo de desenvolvimento (com live reload via nodemon):
 
-This will start the application on port 3000. The API will be accessible at http://localhost:3000.
+`npm run dev`
 
-Endpoints
+Isso vai iniciar a aplicação na porta 3000. A API estará acessível em http://localhost:3000.
 
-The backend API offers the following endpoints:
+##### Endpoints
 
-1. GET /api/devices
+A API do backend oferece os seguintes endpoints:
 
-Returns the list of simulated devices.
+##### 1. GET /api/devices
 
-Example Response:
+Retorna a lista de dispositivos simulados.
 
+Resposta Exemplo:
+
+```json
 [
   {
     "id": "1",
@@ -78,16 +81,19 @@ Example Response:
     "lastActivity": "2024-11-06T12:00:00.000Z"
   }
 ]
+```
 
-2. GET /api/devices/:id
+##### 2. GET /api/devices/:id
 
-Returns details of a specific device.
+Retorna os detalhes de um dispositivo específico.
 
-URL Parameters:
-	•	id (required): Device ID.
+Parâmetros de URL:
 
-Example Response:
+**	•	id (obrigatório): ID do dispositivo.**
 
+Resposta Exemplo:
+
+```json
 {
   "id": "1",
   "name": "Smart TV Living Room",
@@ -97,22 +103,27 @@ Example Response:
   "status": "online",
   "lastActivity": "2024-11-06T12:34:56.000Z"
 }
+```
 
-3. PUT /api/devices/:id/status
+##### 3. PUT /api/devices/:id/status
 
-Updates the status of a specific device.
+Atualiza o status de um dispositivo específico.
 
-URL Parameters:
-	•	id (required): Device ID.
+Parâmetros de URL:
 
-Request Body (JSON):
+	•	id (obrigatório): ID do dispositivo.
 
+Corpo da Requisição (JSON):
+
+```json
 {
   "status": "offline"
 }
+```
 
-Example Response:
+Resposta Exemplo:
 
+```json
 {
   "id": "1",
   "name": "Smart TV Living Room",
@@ -122,13 +133,15 @@ Example Response:
   "status": "offline",
   "lastActivity": "2024-11-06T12:34:56.000Z"
 }
+```
 
-4. POST /api/devices
+**4. POST /api/devices**
 
-Creates a new simulated device. Although this functionality allows creating devices, a seed has been added to pre-populate the database with some devices for testing and development.
+Cria um novo dispositivo simulado.
 
-Request Body (JSON):
+Corpo da Requisição (JSON):
 
+```json
 {
   "name": "Light Bedroom",
   "ipAddress": "192.168.1.4",
@@ -136,9 +149,11 @@ Request Body (JSON):
   "deviceType": "IoT device",
   "status": "online"
 }
+```
 
-Example Response:
+Resposta Exemplo:
 
+```json
 {
   "id": "3",
   "name": "Light Bedroom",
@@ -148,16 +163,18 @@ Example Response:
   "status": "online",
   "lastActivity": "2024-11-06T12:34:56.000Z"
 }
+```
 
-Validations
+##### Validações
 
-The system includes request data validations. Device status validation checks if the provided status is valid, i.e., belongs to the set of values defined in the DeviceStatus enumeration. If invalid, the response will be a 400 Bad Request error.
+O sistema possui validações para os dados das requisições. A validação de status do dispositivo verifica se o status fornecido é válido, ou seja, se pertence ao conjunto de valores definidos na enumeração DeviceStatus. Se inválido, a resposta será um erro 400 Bad Request.
 
-New device validation ensures that all required fields (such as name, ipAddress, macAddress, deviceType, and status) are present and correct before creating the device.
+A validação de novo dispositivo assegura que todos os campos necessários (como name, ipAddress, macAddress, deviceType e status) estão presentes e corretos antes de criar o dispositivo.
 
-Technologies Used
-	•	Node.js (backend)
-	•	Express.js (server framework)
-	•	TypeORM (ORM for PostgreSQL)
-	•	PostgreSQL (database)
-	•	Docker (for easy database setup)
+Tecnologias Usadas
+
+	•	Node.js (back-end)
+	•	Express.js (framework para servidor)
+	•	TypeORM (ORM para PostgreSQL)
+	•	PostgreSQL (banco de dados)
+	•	Docker (para facilitar a configuração do banco de dados)
