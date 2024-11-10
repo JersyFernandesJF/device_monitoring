@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebSocket Client</title>
+</head>
+<body>
+<h1>WebSocket Test</h1>
+
+</body>
+</html>
+<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+<script>
+  const socket = io("http://localhost:3000");
+  socket.on("connect", (h) => {
+    console.log(socket.connected, socket.id)
+
+  })
+
+  socket.on("deviceStatusUpdated", (data) => {
+      console.log("Status do dispositivo atualizado:", data);
+    });
+
+    socket.on("deviceCreated", (data) => {
+      console.log("Novo dispositivo criado:", data);
+    });
+
+    socket.on("deviceDeleted", (data) => {
+      console.log("Dispositivo deletado:", data);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Desconectado do servidor");
+    });
+</script>

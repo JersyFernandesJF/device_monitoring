@@ -1,0 +1,67 @@
+<div class="device-list-container">
+  <div class="device-list-header">
+     <h2>Device List</h2>
+     <section>
+      <mat-button-toggle-group
+        name="status"
+        aria-label="Status"
+        [value]="'all'"
+        (change)="onToggleChange($event)"
+      >
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="online">Online</mat-button-toggle>
+        <mat-button-toggle value="offline">Offline</mat-button-toggle>
+      </mat-button-toggle-group>
+    </section>
+  </div>
+  <div class="filter-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Filter by MAC Address</mat-label>
+      <input matInput name="macAddressFilter" [(ngModel)]="macAddressFilter" (input)="filterDevicesByMacAddress()" placeholder="Enter MAC Address">
+    </mat-form-field>
+  </div>
+  <div *ngIf="filteredDevices.length > 0; else noDevices" class="device-cards">
+    <div *ngFor="let device of filteredDevices" class="device-card">
+      <ng-container *ngIf="device">
+        <div class="device-header">
+          <h3>{{ device.type }}</h3>
+          <span class="status"
+            [ngClass]="{'online': device.status === 'online', 'offline': device.status !== 'online'}">
+            {{ device.status }}
+          </span>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" yPosition="below">
+            <button mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="toogleStatus(device.id)">
+              <ng-container *ngIf="device.status === 'offline'; else offlineIcon">
+                <mat-icon>signal_wifi_4_bar</mat-icon>
+              </ng-container>
+              <ng-template #offlineIcon>
+                <mat-icon>signal_wifi_off</mat-icon>
+              </ng-template>
+              <span>{{ device.status === 'online' ? 'Set Offline' : 'Set Online' }}</span>
+            </button>
+            <button mat-menu-item disabled>
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
+        <div class="device-info">
+          <p><strong>IP Address:</strong> {{ device.ipAddress }}</p>
+          <p><strong>MAC Address:</strong> {{ device.macAddress }}</p>
+          <p><strong>Última Atividade:</strong> {{ device.lastActivity | date: 'short' }}</p>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-template #noDevices>
+    <p class="no-devices">No devices found.</p>
+  </ng-template>
+</div>
