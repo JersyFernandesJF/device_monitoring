@@ -5,7 +5,7 @@
       <mat-button-toggle-group
         name="status"
         aria-label="Status"
-        [value]="'All'"
+        [value]="'all'"
         (change)="onToggleChange($event)"
       >
         <mat-button-toggle value="all">All</mat-button-toggle>
@@ -14,9 +14,14 @@
       </mat-button-toggle-group>
     </section>
   </div>
- 
-  <div *ngIf="devices.length > 0; else noDevices" class="device-cards">
-    <div *ngFor="let device of devices" class="device-card">
+  <div class="filter-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Filter by MAC Address</mat-label>
+      <input matInput name="macAddressFilter" [(ngModel)]="macAddressFilter" (input)="filterDevicesByMacAddress()" placeholder="Enter MAC Address">
+    </mat-form-field>
+  </div>
+  <div *ngIf="filteredDevices.length > 0; else noDevices" class="device-cards">
+    <div *ngFor="let device of filteredDevices" class="device-card">
       <ng-container *ngIf="device">
         <div class="device-header">
           <h3>{{ device.type }}</h3>

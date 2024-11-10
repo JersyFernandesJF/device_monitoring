@@ -77,3 +77,11 @@ h2 {
   text-align: center;
   margin-top: 20px;
 }
+
+.filter-container {
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+}

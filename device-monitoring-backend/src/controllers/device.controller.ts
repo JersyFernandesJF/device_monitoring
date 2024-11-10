@@ -36,7 +36,7 @@ export const updateDevicesStatus = async (req: Request, res: Response) => {
   const updatedDevice = await useCase.execute(id, status);
 
   if (updatedDevice) {
-    io.emit("deviceStatusUpdated", { id, status });
+    io.emit("deviceStatusUpdated", updatedDevice);
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };
@@ -58,7 +58,7 @@ export const toogleDevicesStatus = async (req: Request, res: Response) => {
   const updatedDevice = await useCase.execute(id);
 
   if (updatedDevice) {
-    io.emit("deviceStatusUpdated", { updatedDevice });
+    io.emit("deviceStatusUpdated", updatedDevice );
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };

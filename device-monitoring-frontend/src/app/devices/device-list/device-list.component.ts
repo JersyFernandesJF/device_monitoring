@@ -3,6 +3,7 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  inject,
 } from '@angular/core';
 import { DeviceService } from '../../services/device.service';
 import { Device } from '../../models/device.model';
@@ -16,6 +17,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { SocketService } from '../../services/socket.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
 
 interface DeviceType {
   value: string;
@@ -35,6 +38,7 @@ interface DeviceType {
     MatFormFieldModule,
     MatButtonToggleModule,
     MatSelectModule,
+    MatInputModule
   ],
   templateUrl: './device-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,6 +46,11 @@ interface DeviceType {
 })
 export class DeviceListComponent implements OnInit {
   hideMultipleSelectionIndicator = false;
+  currentFilter: string = 'all';
+  private _snackBar = inject(MatSnackBar); 
+  devices: Partial<Device[]> = [];
+  filteredDevices: Partial<Device[]> = []
+  macAddressFilter: string = ""
 
   deviceTypes: DeviceType[] = [
     { value: 'SMART_TV', viewValue: 'Smart TV' },
@@ -49,76 +58,88 @@ export class DeviceListComponent implements OnInit {
     { value: 'IOT_DEVICE', viewValue: 'IoT device' },
   ];
 
-  devices: Partial<Device[]> = [];
+ 
 
   constructor(
     private deviceService: DeviceService,
     private cdr: ChangeDetectorRef,
-    private socketService: SocketService
+    private socketService: SocketService,
   ) {}
 
   ngOnInit(): void {
-    this.refreshDeviceList();
+    this.refreshDeviceListByFilter();
+    this.filteredDevices = this.devices;
     this.listenToSocketEvents();
+    
+  }
+  openSnackBar(message: string, action: string) {
+    return this._snackBar.open(message, action);
   }
 
-  refreshDeviceList() {
-    this.deviceService.getDevices().subscribe((data) => {
-      this.devices = data;
-      this.cdr.markForCheck();
-    });
+  filterDevicesByMacAddress() {
+    const filter = this.macAddressFilter.trim().toLowerCase();
+    this.filteredDevices = this.devices.filter((device) =>
+      device?.macAddress?.toLowerCase().includes(filter)
+    );
+  }
+  refreshDeviceListByFilter() {
+    if (this.currentFilter === 'all') {
+      this.deviceService.getDevices().subscribe((data) => {
+        this.devices = data;
+        this.devices = this.sortDevicesByCreatedAt(this.devices);
+        this.filterDevicesByMacAddress();
+        this.cdr.markForCheck();
+      });
+    } else {
+      this.deviceService
+        .getAllDevicesByStatus(this.currentFilter)
+        .subscribe((response) => {
+          this.devices = response;
+          this.devices = this.sortDevicesByCreatedAt(this.devices);
+          this.filterDevicesByMacAddress();
+          this.cdr.markForCheck();
+        });
+    }
   }
 
   toogleStatus(id: string): void {
-    this.deviceService.toogleDeviceById(id).subscribe(
-      (response) => {
-        console.log(response)
-        this.devices = this.devices.map((device) =>
-          device?.id === id ? response : device
-        );
-        this.cdr.markForCheck();
-      },
-      (error) => {
-        console.error('Erro ao alterar status', error);
-      }
-    );
+    this.deviceService.toogleDeviceById(id).subscribe((response)=>{
+      this.openSnackBar("Device Updated: " +response.macAddress, "Ok")
+    });
+    this.refreshDeviceListByFilter();
+    
   }
 
   onToggleChange(event: any): void {
-    if (event.value === 'all') {
-      this.refreshDeviceList();
-    } else {
-      this.deviceService.getAllDevicesByStatus(event.value).subscribe(
-        (response) => {
-          this.devices = response;
-          this.cdr.markForCheck();
-        },
-        (error) => {
-          console.error('Error changing status!', error);
-        }
-      );
-    }
+    this.currentFilter = event.value;
+    this.refreshDeviceListByFilter();
   }
+
   listenToSocketEvents() {
     this.socketService.on('deviceStatusUpdated').subscribe((updatedDevice) => {
-      console.log("Status Updated")
-      console.log(updatedDevice)
-      this.devices = this.devices.map((device) =>
-        device?.id === updatedDevice.id ? updatedDevice : device
-      );
-      this.cdr.markForCheck();
+      this.openSnackBar("Device Updated Status: " +updatedDevice.macAddress, "Go there")
+
+      this.refreshDeviceListByFilter();
     });
 
     this.socketService.on('deviceCreated').subscribe((newDevice) => {
-      console.log("Device Created")
-      this.devices = [...this.devices, newDevice];
-      this.cdr.markForCheck();
+      this.openSnackBar("Device Created: " +newDevice.macAddress, "Ok")
+      this.refreshDeviceListByFilter();
     });
 
     this.socketService.on('deviceDeleted').subscribe(({ id }) => {
-      console.log("Device deleted")
-      this.devices = this.devices.filter((device) => device?.id !== id);
-      this.cdr.markForCheck();
+      this.openSnackBar("Device deleted: " +id, "Ok")
+      this.refreshDeviceListByFilter();
     });
+  }
+  
+
+  private sortDevicesByCreatedAt(
+    devices: Partial<Device[]>
+  ): Partial<Device[]> {
+    return devices.sort(
+      (a, b) =>
+        new Date(a!.created_at).getTime() - new Date(b!.created_at).getTime()
+    );
   }
 }
