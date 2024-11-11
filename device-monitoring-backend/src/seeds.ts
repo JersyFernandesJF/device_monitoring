@@ -31,6 +31,6 @@ export async function seed() {
 }
 
 seed().catch((error) => {
-  console.error("Erro ao popular a base de dados:", error);
+  console.error("Error populating the database:", error);
   process.exit(1);
 });

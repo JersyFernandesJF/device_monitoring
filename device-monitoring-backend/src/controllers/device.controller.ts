@@ -10,6 +10,7 @@ import {
 } from "../use-cases";
 import { DeviceStatus } from "../enums";
 import { io } from "../";
+import { socketEventHandler } from "../index";
 
 export const getAllDevices = async (req: Request, res: Response) => {
   const useCase = new GetAllDeviceUseCase();
@@ -36,7 +37,7 @@ export const updateDevicesStatus = async (req: Request, res: Response) => {
   const updatedDevice = await useCase.execute(id, status);
 
   if (updatedDevice) {
-    io.emit("deviceStatusUpdated", updatedDevice);
+    socketEventHandler.emitDeviceStatusUpdated(updatedDevice);
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };
@@ -58,7 +59,7 @@ export const toogleDevicesStatus = async (req: Request, res: Response) => {
   const updatedDevice = await useCase.execute(id);
 
   if (updatedDevice) {
-    io.emit("deviceStatusUpdated", updatedDevice );
+    socketEventHandler.emitDeviceStatusUpdated(updatedDevice);
     res.json(updatedDevice);
   } else res.status(404).json({ error: "Device not found" });
 };
@@ -68,7 +69,7 @@ export const createDevice = async (req: Request, res: Response) => {
   const newDevice = await useCase.execute(req.body);
 
   if (newDevice) {
-    io.emit("deviceCreated", newDevice);
+    socketEventHandler.emitDeviceCreated(newDevice);
     res.status(201).json(newDevice);
   } else res.status(400).json({ error: "Something wrong happened" });
 };
@@ -78,7 +79,7 @@ export const deleteDevice = async (req: Request, res: Response) => {
   const useCase = new DeleteDeviceUseCase();
   const result = await useCase.execute(id);
   if (result) {
-    io.emit("deviceDeleted", { id });
+    socketEventHandler.emitDeviceDeleted(id);
     res.status(204).send();
   } else {
     res.status(404).json({ error: "Device not found" });
